@@ -1,0 +1,840 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "## WVD Monitoring\n---\n\nWelcome to your new workbook.  This area will display text formatted as markdown.\n\nSelect your tab to view additional dashboard items. "
+      },
+      "name": "text - 2"
+    },
+    {
+      "type": 11,
+      "content": {
+        "version": "LinkItem/1.0",
+        "style": "tabs",
+        "links": [
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "WVD Monitoring",
+            "subTarget": "WVDMonitoring",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "WVD Diagnostics",
+            "subTarget": "WVDDiagnostics",
+            "style": "link"
+          },
+          {
+            "cellValue": "selectedTab",
+            "linkTarget": "parameter",
+            "linkLabel": "Unfinished Tab",
+            "subTarget": "UnfinishedTab",
+            "style": "link"
+          }
+        ]
+      },
+      "name": "links - 14"
+    },
+    {
+      "type": 1,
+      "content": {
+        "json": "-------------------------"
+      },
+      "name": "text - 11"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "016ab56e-ec00-4e75-a8db-6091a0cc850b",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "isRequired": true,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 1800000
+                },
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                }
+              ]
+            },
+            "resourceType": "microsoft.insights/components",
+            "value": {
+              "durationMs": 172800000
+            }
+          },
+          {
+            "id": "38e1c502-c2e1-4796-ad71-457f3d564482",
+            "version": "KqlParameterItem/1.0",
+            "name": "HasHeatBeat",
+            "type": 2,
+            "isRequired": true,
+            "query": "Heartbeat\r\n| take 1\r\n| summarize count() ",
+            "value": "1",
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "queryType": 0,
+            "resourceType": "microsoft.operationalinsights/workspaces"
+          },
+          {
+            "id": "16dfe69b-f469-4809-8904-28914799662f",
+            "version": "KqlParameterItem/1.0",
+            "name": "UnhealthyCriteria",
+            "label": "Unhealthy Criteria",
+            "type": 2,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n    { \"value\":\"1m\", \"label\":\"1 minute without heartbeat\", \"selected\":false },\r\n    { \"value\":\"5m\", \"label\":\"5 minutes without heartbeat\", \"selected\":true },\r\n    { \"value\":\"30m\", \"label\":\"30 minutes without heartbeat\", \"selected\":false },\r\n    { \"value\":\"1h\", \"label\":\"1 hour without heartbeat\", \"selected\":false },\r\n    { \"value\":\"2h\", \"label\":\"2 hours without heartbeat\", \"selected\":false },\r\n    { \"value\":\"8h\", \"label\":\"8 hours without heartbeat\", \"selected\":false },\r\n    { \"value\":\"1d\", \"label\":\"1 day without heartbeat\", \"selected\":false },\r\n    { \"value\":\"2d\", \"label\":\"2 days without heartbeat\", \"selected\":false },\r\n    { \"value\":\"7d\", \"label\":\"7 days without heartbeat\", \"selected\":false }\r\n]",
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "resourceType": "microsoft.insights/components"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters - 2"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "WVDConnections\r\n| where State == \"Connected\"\r\n| extend ClientOSType = pack(\"ClientOSVersion\", ClientOS)\r\n| summarize count() by ClientOS\r\n| render piechart\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+              "size": 4,
+              "showAnalytics": true,
+              "title": "Client Connection OS",
+              "noDataMessageStyle": 5,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "chartSettings": {
+                "showMetrics": false,
+                "showLegend": true,
+                "ySettings": {}
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "Client Connection OS",
+            "styleSettings": {
+              "maxWidth": "25%",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Code to display active and inactive sessions by computer\r\n// Adding a render piechart will automatically display the consolidated information into a piechart for visual\r\n// Display the Current Active and Inactive sessions by linking to the latest counter values from each table. \r\nPerf\r\n| where CounterName == \"Active Sessions\"\r\n| extend ActiveSessions = toint(CounterValue)\r\n| project Computer, ActiveTimeStamp=TimeGenerated, ActiveSessions \r\n| join kind= inner (\r\n   Perf\r\n   | where CounterName == \"Inactive Sessions\"\r\n   | extend totalinactivesessions = toint(CounterValue)\r\n   | extend InactiveSessions = totalinactivesessions - 2\r\n   | project Computer, InactiveTimeStamp=TimeGenerated, InactiveSessions  \r\n) on Computer \r\n| where (ActiveTimeStamp - InactiveTimeStamp) between (0min .. 15s)\r\n| summarize arg_max(ActiveTimeStamp, *) by Computer\r\n| extend Sessions = pack(\"Inactive Sessions\", InactiveSessions, \"Active Sessions\", ActiveSessions)\r\n| mvexpand kind=array Sessions\r\n| project SessionType = tostring(Sessions[0]), value = toint(Sessions[1]), Computer = Computer\r\n| render piechart\r\n",
+              "size": 4,
+              "showAnalytics": true,
+              "title": "Current Session Status",
+              "noDataMessageStyle": 5,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "chartSettings": {
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "Inactive Sessions",
+                    "label": "Inactive Sessions",
+                    "color": "orange"
+                  },
+                  {
+                    "seriesName": "Active Sessions",
+                    "label": "Active Sessions",
+                    "color": "green"
+                  }
+                ],
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "Current Session Status",
+            "styleSettings": {
+              "maxWidth": "25%",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "WVDConnections\r\n//|where UserName == \"userupn\"\r\n//|take 100\r\n|sort by TimeGenerated asc, CorrelationId\r\n|summarize dcount(CorrelationId) by bin(TimeGenerated, 1d)",
+              "size": 4,
+              "showAnnotations": true,
+              "title": "Daily Connections - Rolling 7 days",
+              "timeContext": {
+                "durationMs": 604800000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "unstackedbar",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "TimeGenerated",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "TimeGenerated",
+                  "sortOrder": 1
+                }
+              ],
+              "tileSettings": {
+                "showBorder": false
+              },
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "xAxis": "TimeGenerated",
+                "yAxis": [
+                  "dcount_CorrelationId"
+                ],
+                "seriesLabelSettings": [
+                  {
+                    "seriesName": "dcount_CorrelationId",
+                    "label": "Total Logins"
+                  }
+                ],
+                "xSettings": {
+                  "numberFormatSettings": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false
+                    }
+                  }
+                },
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false
+                    }
+                  }
+                }
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 3",
+            "styleSettings": {
+              "maxWidth": "25%",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "SigninLogs\r\n| where ResourceDisplayName == \"Windows Virtual Desktop\"\r\n| summarize arg_max(CorrelationId, *) by CorrelationId\r\n| project [\"City\"]= LocationDetails.city, LocationDetails.geoCoordinates.longitude, LocationDetails.geoCoordinates.latitude",
+              "size": 4,
+              "title": "Logon Location Heatmap",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "map",
+              "mapSettings": {
+                "locInfo": "LatLong",
+                "locInfoColumn": "Location",
+                "latitude": "LocationDetails_geoCoordinates_latitude",
+                "longitude": "LocationDetails_geoCoordinates_longitude",
+                "sizeSettings": "City",
+                "sizeAggregation": "Count",
+                "labelSettings": "City",
+                "legendMetric": "City",
+                "numberOfMetrics": 5,
+                "legendAggregation": "Count",
+                "itemColorSettings": {
+                  "nodeColorField": "City",
+                  "colorAggregation": "Sum",
+                  "type": "heatmap",
+                  "heatmapPalette": "coldHot"
+                }
+              }
+            },
+            "customWidth": "50",
+            "showPin": true,
+            "name": "query - 4",
+            "styleSettings": {
+              "maxWidth": "25%",
+              "showBorder": true
+            }
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "// Code to display active and inactive sessions by computer\r\n// Adding a render piechart will automatically display the consolidated information into a piechart for visual\r\n// Display the Current Active and Inactive sessions by linking to the latest counter values from each table. \r\nPerf\r\n| where CounterName == \"Active Sessions\"\r\n| extend ActiveSessions = toint(CounterValue)\r\n| project Computer, ActiveTimeStamp=TimeGenerated, ActiveSessions \r\n| join kind= inner (\r\n   Perf\r\n   | where CounterName == \"Inactive Sessions\"\r\n   | extend totalinactivesessions = toint(CounterValue)\r\n   | extend InactiveSessions = totalinactivesessions - 2\r\n   | project Computer, InactiveTimeStamp=TimeGenerated, InactiveSessions  \r\n) on Computer \r\n| where (ActiveTimeStamp - InactiveTimeStamp) between (0min .. 15s)\r\n| project ActiveSessions, InactiveSessions, bin(ActiveTimeStamp, 5m)\r\n//| summarize (ActiveSessions, InactiveSessions) by Computer, bin(ActiveTimeStamp, 5m)\r\n//| summarize arg_max(ActiveTimeStamp, *) by Computer\r\n//| extend Sessions = pack(\"Inactive Sessions\", InactiveSessions, \"Active Sessions\", ActiveSessions)\r\n\r\n",
+              "size": 1,
+              "aggregation": 2,
+              "showAnnotations": true,
+              "title": "Session Status History",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "areachart",
+              "tileSettings": {
+                "showBorder": false
+              },
+              "graphSettings": {
+                "type": 0
+              },
+              "chartSettings": {
+                "group": null,
+                "createOtherGroup": 0,
+                "xSettings": {},
+                "ySettings": {}
+              }
+            },
+            "name": "query - 2"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "Perf\r\n//| where Computer == \"WVDARM-0.m365demo.com.au\"\r\n| where ObjectName == \"RemoteFX Network\" and InstanceName matches regex @\"rdp-sxs\\d{9}\\s\\d{0,6}\" and CounterName == \"Current TCP RTT\" and CounterValue > 0\r\n| summarize  avg(CounterValue) by InstanceName, bin(TimeGenerated, 5m)\r\n| order by InstanceName asc\r\n| render timechart ",
+              "size": 0,
+              "aggregation": 3,
+              "title": "Round Trip Latency per session",
+              "timeContext": {
+                "durationMs": 14400000
+              },
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "timechart",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "TimeGenerated",
+                    "sortOrder": 2
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "TimeGenerated",
+                  "sortOrder": 2
+                }
+              ],
+              "tileSettings": {
+                "titleContent": {
+                  "columnMatch": "InstanceName",
+                  "formatter": 1,
+                  "formatOptions": {}
+                },
+                "leftContent": {
+                  "columnMatch": "avg_CounterValue",
+                  "formatter": 12,
+                  "formatOptions": {
+                    "palette": "auto"
+                  },
+                  "numberFormat": {
+                    "unit": 17,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": false,
+                      "maximumFractionDigits": 2,
+                      "maximumSignificantDigits": 3
+                    }
+                  }
+                },
+                "rightContent": {
+                  "columnMatch": "avg_CounterValue",
+                  "formatter": 9,
+                  "formatOptions": {
+                    "palette": "blue"
+                  },
+                  "numberFormat": {
+                    "unit": 23,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                "showBorder": false,
+                "size": "auto"
+              },
+              "chartSettings": {
+                "xAxis": "TimeGenerated",
+                "group": "InstanceName",
+                "createOtherGroup": null,
+                "showMetrics": false,
+                "showLegend": true,
+                "xSettings": {
+                  "numberFormatSettings": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true
+                    }
+                  }
+                },
+                "ySettings": {
+                  "numberFormatSettings": {
+                    "unit": 23,
+                    "options": {
+                      "style": "decimal",
+                      "useGrouping": true,
+                      "maximumFractionDigits": 0
+                    }
+                  }
+                }
+              }
+            },
+            "showPin": true,
+            "name": "query - 13"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "-----------------------------------------------"
+            },
+            "name": "text - 8"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "WVDMonitoring"
+      },
+      "name": "group - 14"
+    },
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "b4b63c7f-e4fa-4fb0-bd56-2ba5c78fcc30",
+            "version": "KqlParameterItem/1.0",
+            "name": "HostLoad",
+            "label": "Host Load Capacity",
+            "type": 2,
+            "description": "Select the workload for the host pools - currently will set for all and just update the display below for max sessions expected",
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": []
+            },
+            "jsonData": "[\r\n        { \"value\":\"2\", \"label\":\"Heavy (2users/vcpu)\", \"selected\":false },\r\n        { \"value\":\"4\", \"label\":\"Medium (4users/vcpu)\", \"selected\":true },\r\n        { \"value\":\"6\", \"label\":\"Light (6users/vcpu)\", \"selected\":false}\r\n]",
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "resourceType": "microsoft.insights/components"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components"
+      },
+      "name": "parameters - 7"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Heartbeat\n| where TimeGenerated {TimeRange:query}\n| summarize LastHeartbeat = max(TimeGenerated) by Computer\n| extend State = iff(LastHeartbeat < ago({UnhealthyCriteria}), 'Unhealthy', 'Healthy')\n| extend TimeFromNow = now() - LastHeartbeat\n| extend [\"TimeAgo\"] = strcat(case(TimeFromNow < 2m, strcat(toint(TimeFromNow / 1m), ' seconds'), TimeFromNow < 2h, strcat(toint(TimeFromNow / 1m), ' minutes'), TimeFromNow < 2d, strcat(toint(TimeFromNow / 1h), ' hours'), strcat(toint(TimeFromNow / 1d), ' days')), ' ago')\n| join kind= innerunique (\nPerf\n| where ObjectName == \"Terminal Services\" and\n(CounterName == \"Active Sessions\")\n| extend ActiveSessions = toint(CounterValue)\n| project Computer, ActiveTimeStamp=TimeGenerated, ActiveSessions\n| join kind=inner (\nPerf\n| where ObjectName == \"Terminal Services\" and CounterName == \"Inactive Sessions\"\n| extend totalinactivesessions = toint(CounterValue)\n| extend InactiveSessions = totalinactivesessions -2\n| project Computer, InactiveTimeStamp=TimeGenerated, InactiveSessions\n) on Computer\n| where (ActiveTimeStamp - InactiveTimeStamp) between (0min .. 15s)\n| summarize arg_max(ActiveTimeStamp, *) by Computer\n| project ActiveSessions, InactiveSessions, Computer\n) on Computer\n| join kind=inner(\nWVDConnections\n| extend Computer = SessionHostName, _ResourceId, SessionHostOSDescription, SessionHostName\n| project _ResourceId, SessionHostOSDescription, SessionHostName, Computer\n) on Computer\n| join (\nPerf\n| where ObjectName == \"Processor\" and CounterName == \"% Processor Time\" and InstanceName!=\"_Total\"\n| extend vCPU=InstanceName\n| summarize dcount(vCPU) by Computer, bin(TimeGenerated, 5m)\n| project Computer, dcount_vCPU\n) on Computer\n| join (\nHeartbeat\n| where TimeGenerated {TimeRange:query}\n| extend Packed = pack_all()\n) on Computer\n| where TimeGenerated == LastHeartbeat\n| join (\nHeartbeat\n| where TimeGenerated {TimeRange:query}\n| make-series InternalTrend=iff(count() > 0, 1, 0) default = 0 on TimeGenerated from {TimeRange:start} to {TimeRange:end} step {UnhealthyCriteria} by Computer\n| extend Trend=array_slice(InternalTrend, array_length(InternalTrend) - 30, array_length(InternalTrend)-1)\n| extend (s_min, s_minId, s_max, s_maxId, s_avg, s_var, s_stdev) = series_stats(Trend)\n| project Computer, Trend, s_avg\n) on Computer\n| extend TotalUserSessions = ActiveSessions + InactiveSessions\n| extend MaxSessions = dcount_vCPU * {HostLoad}\n| extend Computer, SessionHostName\n| order by State, s_avg asc, TimeAgo\n| project [\"Host Pool\"]=_ResourceId, [\"Computer Name\"]= SessionHostName, [\"vCPU Count\"]=dcount_vCPU, State, [\"Resource Group\"] =ResourceGroup , MaxSessions, [\"Total Sessions\"]=TotalUserSessions, [\"Active Sessions\"] =ActiveSessions, [\"Inactive Sessions\"] =InactiveSessions, [\"Host OS\"]=SessionHostOSDescription, [\"Log Analytics Checkin\"]=strcat('🕒 ', TimeAgo), [\"Heartbeat Trend\"]=Trend, Computer, [\"Details\"]=Packed",
+        "size": 1,
+        "title": "Select one for some additional info below",
+        "exportFieldName": "Computer",
+        "exportParameterName": "Computer",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "$gen_group",
+              "formatter": 13,
+              "formatOptions": {
+                "linkTarget": "Resource",
+                "showIcon": true
+              }
+            },
+            {
+              "columnMatch": "Host Pool",
+              "formatter": 5,
+              "formatOptions": {}
+            },
+            {
+              "columnMatch": "Computer Name",
+              "formatter": 16,
+              "formatOptions": {
+                "linkColumn": "Details",
+                "linkTarget": "CellDetails",
+                "linkIsContextBlade": true,
+                "showIcon": false
+              }
+            },
+            {
+              "columnMatch": "State",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "icons",
+                "thresholdsGrid": [
+                  {
+                    "operator": "==",
+                    "thresholdValue": "Healthy",
+                    "representation": "success",
+                    "text": "Healthy"
+                  },
+                  {
+                    "operator": "==",
+                    "thresholdValue": "Unhealthy",
+                    "representation": "3",
+                    "text": "Unhealthy"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": "unknown",
+                    "text": ""
+                  }
+                ]
+              }
+            },
+            {
+              "columnMatch": "Heartbeat Trend",
+              "formatter": 10,
+              "formatOptions": {
+                "palette": "blue"
+              }
+            },
+            {
+              "columnMatch": "Computer",
+              "formatter": 5,
+              "formatOptions": {}
+            }
+          ],
+          "hierarchySettings": {
+            "treeType": 1,
+            "groupBy": [
+              "Host Pool"
+            ],
+            "expandTopLevel": true
+          }
+        }
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "WVDMonitoring"
+      },
+      "name": "query - 2"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//Find Top processes utilizing CPU\r\n// by finding the machine(s) using over 1% of CPU and 0% avg\r\n// then finding the processes using the CPU\r\n// also finding CPU count of the machines to find the actual percentage of CPU being used\r\n//defining our CPU threshold\r\nlet CPUThreshold = 1;\r\n//define time sample rate\r\nlet Time = 10m;\r\n//let Computer = {Computer};\r\n//define Count of processes to return\r\nlet Count = 10;\r\n//Find instances of total cpu being used above 90% over the last 10 minutes\r\nlet TopCPU = Perf\r\n| where Computer == \"{Computer}\"\r\n| where TimeGenerated > now(-Time)\r\n              and ObjectName == \"Processor\"\r\n              and CounterName == \"% Processor Time\"\r\n              and InstanceName == \"_Total\"\r\n              and CounterValue > CPUThreshold\r\n| project Computer, ObjectName, CounterName, CounterValue, TimeGenerated;\r\n//end query\r\n// find top Processes, excluding _Total and Idle instances, there may be other instances you want to exclude as well\r\nlet TopProcess = Perf\r\n| where Computer == \"{Computer}\"\r\n| where TimeGenerated > now(-Time)\r\n               and CounterName == \"% Processor Time\"\r\n               and InstanceName != \"_Total\"\r\n               and InstanceName != \"Idle\"\r\n| project Computer, ObjectName\r\n              , CounterName, InstanceName\r\n              , CounterValue, TimeGenerated;\r\n// end query\r\n// find CPU count for servers(s)\r\nlet FindCPU = Perf\r\n| where Computer == \"{Computer}\"\r\n| where TimeGenerated >= ago(1h)\r\n| where ObjectName == \"Processor\"\r\n              and CounterName == \"% Processor Time\"\r\n              and InstanceName!=\"_Total\"\r\n| sort by InstanceName asc nulls first\r\n| summarize CPUCount = dcount(InstanceName) by Computer;\r\n// end query\r\n//Join all 3 datasets together\r\nFindCPU | join(TopCPU) on Computer \r\n| join(TopProcess)on Computer\r\n| extend PercentProcessorUsed = CounterValue1 / CPUCount\r\n| summarize avg(PercentProcessorUsed) by Computer, ObjectName\r\n                  , CounterName, CPUCount \r\n                  , TotalCPU=CounterValue //rename CounterValue to TotalCPU \r\n                  , Process=ObjectName1 //rename ObjectName1 to Process \r\n                  , ProcessTime=CounterName1 //rename CounterName1 to ProcessTime \r\n                  , ProcessName=InstanceName //rename InstanceName to ProcessName \r\n                  , TimeGenerated\r\n| where Process == \"Process\"\r\nand avg_PercentProcessorUsed > 0 // only return processes that are using more than 25%\r\n| top Count by avg_PercentProcessorUsed desc\r\n| project Computer, CPUCount\r\n                , ProcessName , avg_PercentProcessorUsed\r\n                , TotalCPU, Process\r\n                , ProcessTime, TimeGenerated",
+              "size": 0,
+              "title": "CPU Top Processes utilising CPU",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "gridSettings": {
+                "sortBy": [
+                  {
+                    "itemKey": "Computer",
+                    "sortOrder": 1
+                  }
+                ]
+              },
+              "sortBy": [
+                {
+                  "itemKey": "Computer",
+                  "sortOrder": 1
+                }
+              ]
+            },
+            "name": "query - 6 - Copy"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "WVDMonitoring"
+      },
+      "name": "group - 11"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "WVDErrors\r\n| where ServiceError ==\"false\"\r\n| summarize usercount = count(UserName) by CodeSymbolic\r\n| project CodeSymbolic, usercount\r\n| sort by usercount desc\r\n| render barchart",
+              "size": 1,
+              "title": "WVD Errors - All Users (Select one to view details)",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "exportFieldName": "label",
+              "exportParameterName": "label",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "chartSettings": {
+                "xSettings": {},
+                "ySettings": {}
+              }
+            },
+            "name": "query - 1"
+          },
+          {
+            "type": 12,
+            "content": {
+              "version": "NotebookGroup/1.0",
+              "groupType": "editable",
+              "title": "Errors and Alerts",
+              "items": [
+                {
+                  "type": 3,
+                  "content": {
+                    "version": "KqlItem/1.0",
+                    "query": "WVDErrors\r\n//| where UserName == \"evas@microsoft.com\"\r\n| where CodeSymbolic == \"{label}\"\r\n| project TimeGenerated, CorrelationId, UserName, ActivityType, Source, Code, CodeSymbolic, Message, ServiceError, _ResourceId\r\n| take 20\r\n| sort by TimeGenerated desc\r\n",
+                    "size": 1,
+                    "title": "WVD Errors - Latest 20 results",
+                    "timeContext": {
+                      "durationMs": 0
+                    },
+                    "timeContextFromParameter": "TimeRange",
+                    "queryType": 0,
+                    "resourceType": "microsoft.operationalinsights/workspaces",
+                    "gridSettings": {
+                      "sortBy": [
+                        {
+                          "itemKey": "TimeGenerated",
+                          "sortOrder": 1
+                        }
+                      ]
+                    },
+                    "sortBy": [
+                      {
+                        "itemKey": "TimeGenerated",
+                        "sortOrder": 1
+                      }
+                    ]
+                  },
+                  "name": "query - 0"
+                }
+              ]
+            },
+            "name": "group - 11"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "WVDDiagnostics"
+      },
+      "name": "group - wvderrors"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "WVDConnections\r\n| project-away TenantId,SourceSystem\r\n| summarize arg_max(TimeGenerated, *), StartTime =  min(iff(State== 'Started', TimeGenerated , datetime(null) )), ConnectTime = min(iff(State== 'Connected', TimeGenerated , datetime(null) ))   by CorrelationId\r\n| join kind=leftouter (\r\n    WVDErrors\r\n    |summarize Errors=makelist(pack('Code', Code, 'CodeSymbolic', CodeSymbolic, 'Time', TimeGenerated, 'Message', Message ,'ServiceError', ServiceError, 'Source', Source)) by CorrelationId\r\n    ) on CorrelationId    \r\n| join kind=leftouter (\r\n   WVDCheckpoints\r\n   | summarize Checkpoints=makelist(pack('Time', TimeGenerated, 'Name', Name, 'Parameters', Parameters, 'Source', Source)) by CorrelationId\r\n   | mv-apply Checkpoints on\r\n    (\r\n        order by todatetime(Checkpoints['Time']) asc\r\n        | summarize Checkpoints=makelist(Checkpoints)\r\n    )\r\n   ) on CorrelationId\r\n| project-away CorrelationId1, CorrelationId2\r\n| order by  TimeGenerated desc",
+        "size": 0,
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "query - 10 - Copy"
+    },
+    {
+      "type": 12,
+      "content": {
+        "version": "NotebookGroup/1.0",
+        "groupType": "editable",
+        "title": "Session History Group (expand to view)",
+        "expandable": true,
+        "expanded": true,
+        "items": [
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "WVDConnections\r\n| where State == \"Connected\"\r\n| project CorrelationId , UserName, ResourceAlias , StartTime=TimeGenerated\r\n| join (WVDConnections\r\n| where State == \"Completed\"\r\n| project EndTime=TimeGenerated, CorrelationId)\r\non CorrelationId\r\n| project Duration = EndTime - StartTime, ResourceAlias, UserName , StartTime, EndTime\r\n| limit 10\r\n| sort by Duration asc",
+              "size": 1,
+              "title": "Recently Completed Logon Durations",
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces"
+            },
+            "customWidth": "50",
+            "name": "query - 11"
+          },
+          {
+            "type": 3,
+            "content": {
+              "version": "KqlItem/1.0",
+              "query": "//let Events = WVDConnections | where UserName == \"labuser2@m365demo.com.au\" ;\r\n\r\n//Events\r\nWVDConnections\r\n| where State == \"Connected\"\r\n\r\n| project CorrelationId , UserName, ResourceAlias , StartTime=TimeGenerated\r\n\r\n| join (WVDConnections\r\n\r\n| where State == \"Completed\"\r\n\r\n| project EndTime=TimeGenerated, CorrelationId)\r\n\r\non CorrelationId\r\n| extend DurationTotal = EndTime - StartTime\r\n| summarize TimeConnected = avg(DurationTotal)\r\n//| extend toint(TimeConnected)\r\n| project [\"Average Connection Time\"]=TimeConnected\r\n\r\n\r\n//| summarize avg(Duration) by Duration\r\n//| sort by Duration asc",
+              "size": 4,
+              "timeContext": {
+                "durationMs": 0
+              },
+              "timeContextFromParameter": "TimeRange",
+              "queryType": 0,
+              "resourceType": "microsoft.operationalinsights/workspaces",
+              "visualization": "table",
+              "tileSettings": {
+                "titleContent": {
+                  "formatOptions": {}
+                },
+                "leftContent": {
+                  "columnMatch": "Average Connection Time",
+                  "formatter": 2,
+                  "formatOptions": {},
+                  "numberFormat": {
+                    "unit": 0,
+                    "options": {
+                      "style": "decimal"
+                    }
+                  }
+                },
+                "showBorder": false,
+                "size": "auto"
+              }
+            },
+            "customWidth": "20",
+            "name": "query - 13"
+          },
+          {
+            "type": 1,
+            "content": {
+              "json": "Test {Computer}"
+            },
+            "name": "text - 2"
+          }
+        ]
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "WVDDiagnostics"
+      },
+      "name": "Session History Group",
+      "styleSettings": {
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "WVDConnections\r\n| project SessionHostName, _ResourceId, SessionHostOSDescription\r\n//| project-away CorrelationId1, CorrelationId2\r\n//| order by  TimeGenerated desc",
+        "size": 0,
+        "title": "Dummy Query for Now",
+        "timeContext": {
+          "durationMs": 0
+        },
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "conditionalVisibility": {
+        "parameterName": "selectedTab",
+        "comparison": "isEqualTo",
+        "value": "Unfinished"
+      },
+      "customWidth": "50",
+      "name": "query - 10 - Copy - Copy"
+    }
+  ],
+  "styleSettings": {
+    "paddingStyle": "none",
+    "spacingStyle": "none"
+  },
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
